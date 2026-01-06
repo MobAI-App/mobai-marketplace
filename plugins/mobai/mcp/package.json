@@ -1,0 +1,21 @@
+{
+  "name": "mobai-http-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for MobAI HTTP API (bundled with Claude Code plugin)",
+  "type": "module",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "author": "MobAI <contact@mobai.run>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

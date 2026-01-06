@@ -1,0 +1,26 @@
+{
+  "name": "mobai-marketplace",
+  "owner": {
+    "name": "MobAI",
+    "email": "contact@mobai.run"
+  },
+  "metadata": {
+    "description": "Official marketplace for MobAI Claude Code plugins"
+  },
+  "plugins": [
+    {
+      "name": "mobai",
+      "source": "./plugins/mobai",
+      "description": "Control Android and iOS devices, emulators, and simulators through MobAI HTTP API",
+      "version": "1.0.0",
+      "author": {
+        "name": "MobAI",
+        "email": "contact@mobai.run",
+        "url": "https://mobai.run"
+      },
+      "repository": "https://github.com/MobAI-App/mobai-marketplace",
+      "license": "Apache-2.0",
+      "keywords": ["mobile", "automation", "android", "ios", "device-control", "emulator", "simulator", "ai-agent"]
+    }
+  ]
+}
