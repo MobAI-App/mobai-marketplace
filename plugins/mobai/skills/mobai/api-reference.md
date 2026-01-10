@@ -647,14 +647,14 @@ Execute a batch of DSL steps with automatic retry and error handling.
 |--------|-------------|------------|
 | `observe` | Get UI tree/screenshot/installed apps | `context`, `include` (ui_tree, screenshot, activity, installed_apps), `include_keyboard` |
 | `tap` | Tap element or coordinates | `predicate`, `coords`, `selector` |
-| `type` | Type text | `text`, `predicate`, `clear_first`, `dismiss_keyboard` |
+| `type` | Type text | `text`, `predicate` (required if keyboard not open), `clear_first`, `dismiss_keyboard` (default: false) |
 | `toggle` | Set switch/checkbox to state | `predicate`, `state` ("on"/"off") |
 | `swipe` | Swipe gesture | `direction`, `distance`, `duration_ms` |
 | `long_press` | Long press | `predicate`, `coords`, `duration_ms` |
 | `scroll` | Single scroll or scroll until found `element` | `direction`, `predicate` (container), `to_element` (target), `max_scrolls` |
 | `open_app` | Launch app | `bundle_id` |
 | `navigate` | Go home/back or URL | `target`, `url` |
-| `press_key` | Press hardware key | `key` |
+| `press_key` | Press key | `key`, `context` (optional: "web" for JS keyboard events - supports enter, tab, delete, escape) |
 | `wait_for` | Wait for element | `predicate`, `timeout_ms` |
 | `assert_exists` | Verify element exists | `predicate`, `timeout_ms`, `message` |
 | `assert_not_exists` | Verify element does NOT exist | `predicate`, `message` |
@@ -663,8 +663,14 @@ Execute a batch of DSL steps with automatic retry and error handling.
 | `assert_screen_changed` | Verify screen content changed | `threshold_percent` |
 | `delay` | Wait fixed time | `duration_ms` |
 | `execute_js` | Run JavaScript (web) | `script` |
-| `select_web_context` | Select web page | `page_id` |
+| `select_web_context` | Select web page | `page_id`, `url_contains`, `title_contains` |
 | `if_exists` | Conditional execution | `predicate`, `then`, `else` |
+
+**Note on `type` action:** Requires either:
+- `predicate` field to target an input element, OR
+- Keyboard already open from previous tap on input field
+
+Error if neither condition met: "no predicate specified and keyboard is not open"
 
 ### Predicate Matching
 

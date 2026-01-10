@@ -32,7 +32,7 @@ For complex automation tasks, use a **hierarchical approach** with specialized s
 | Simple query (list devices, take screenshot) | Direct API call |
 | Native app automation (Settings, Instagram) | Spawn **native-runner** sub-agent |
 | Browser chrome (URL bar, tabs, nav buttons) | Spawn **native-runner** sub-agent |
-| Web page DOM content (forms, links, text) and webview | Spawn **web-runner** sub-agent (ONLY for DOM) |
+| Web page DOM content (CSS selectors, JS, DOM) | Spawn **web-runner** sub-agent (try native-runner first) |
 | Complex multi-step task | Break into subgoals, spawn appropriate sub-agent for each |
 
 ### Native Runner (`/native-runner`)
@@ -52,11 +52,13 @@ Device ID: [deviceId]
 
 ### Web Runner (`/web-runner`)
 
-**ONLY use for interacting with web page DOM content** - the actual HTML/CSS/JS rendered inside a browser or WebView:
-- Filling out forms on web pages
-- Clicking links or buttons rendered by HTML
-- Reading text content from web pages
-- Executing JavaScript on the page
+Use web-runner when you need to interact with DOM content inside a web page or WebView:
+- Native-runner failed with NO_MATCH on web page elements
+- You need CSS selectors to target specific HTML elements
+- You need to execute JavaScript on the page
+- You need to read/manipulate DOM content programmatically
+
+**Try native-runner first** - it works for most web page interactions via accessibility tree.
 
 **DO NOT use for browser UI elements** (address bar, tabs, back button) - those are native!
 

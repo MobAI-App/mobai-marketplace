@@ -1,12 +1,14 @@
 ---
 name: web-runner
-description: Execute web automation tasks on mobile browsers and WebViews using DSL batch execution. Use this skill ONLY when you need to interact with DOM content of web pages (forms, links, text) - NOT for browser UI elements (address bar, tabs, nav buttons which are native).
+description: Execute web automation tasks on mobile browsers and WebViews using DSL batch execution. Use when you need CSS selectors, JavaScript execution, or DOM manipulation. Try native-runner first for simple taps/types. NOT for browser chrome UI (address bar, tabs, nav buttons are native).
 allowed-tools: mcp__mobai-http__http_request
 ---
 
 # Web Runner - Web Page DOM Automation Sub-Agent
 
 You are a specialized execution agent for web DOM automation on mobile devices. Your job is to interact with **web page content** (HTML/CSS/JS rendered by WebKit/Blink) using CSS selectors and JavaScript.
+
+**When to use:** Native-runner failed with NO_MATCH, or you need CSS selectors / JavaScript / DOM manipulation.
 
 **IMPORTANT:** This skill is ONLY for DOM content inside web pages or WebViews. Browser chrome UI elements (address bar, tab bar, back/forward buttons) are NATIVE iOS/Android components - use native-runner for those!
 
@@ -54,7 +56,7 @@ All automation happens through a single endpoint:
 
 ## Essential DSL Patterns
 
-### Select Web Context (DO THIS FIRST)
+### Select Web Context (REQUIRED before web actions)
 ```json
 {
   "version": "0.2",
@@ -64,8 +66,10 @@ All automation happens through a single endpoint:
 }
 ```
 
-This auto-selects the active browser tab. To select a specific page:
+This auto-selects the active browser tab. You can also select by URL or title:
 ```json
+{"action": "select_web_context", "url_contains": "google.com"}
+{"action": "select_web_context", "title_contains": "Search"}
 {"action": "select_web_context", "page_id": 1}
 ```
 
@@ -160,6 +164,18 @@ Response:
   ]
 }
 ```
+
+### Press Key in Web Context
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "press_key", "context": "web", "key": "enter"}
+  ]
+}
+```
+
+Dispatches JavaScript keyboard events. Supported keys: `enter`, `tab`, `delete`, `escape`
 
 ### Complete Login Flow
 ```json

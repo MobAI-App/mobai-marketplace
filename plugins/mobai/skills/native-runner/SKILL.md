@@ -30,11 +30,40 @@ http://127.0.0.1:8686/api/v1
 
 ## Core Workflow
 
-1. **Build a DSL script** with observe + action steps
+1. **Build a DSL script** with action steps (UI tree should be loaded upfront)
 2. **Execute the batch** via `/dsl/execute`
 3. **Analyze results** - check step_results for success/failure
-4. **Iterate if needed** - build next script based on observed UI
+4. **Iterate if needed** - build next script based on results
 5. **Report completion** when subgoal is achieved
+
+## Script Writing Guidelines
+
+**Build comprehensive scripts using common knowledge.** The DSL is designed to minimize LLM calls - instead of observe → think → 1 action → repeat, encode your assumptions into a full script:
+
+```json
+[
+  {"action": "open_app", "bundle_id": "com.apple.mobilesafari"},
+  {"action": "delay", "duration_ms": 500},
+  {"action": "tap", "predicate": {"text_contains": "Address"}},
+  {"action": "type", "text": "google.com"},
+  {"action": "press_key", "key": "enter"},
+  {"action": "delay", "duration_ms": 2000},
+  {"action": "if_exists", "predicate": {"text_contains": "Accept"}, "then": [
+    {"action": "tap", "predicate": {"text_contains": "Accept"}}
+  ]}
+]
+```
+
+**Use common knowledge:**
+- Safari/Chrome have address bars, tab buttons, navigation buttons
+- Settings app has sections like Wi-Fi, Bluetooth, General
+- Apps have predictable UI patterns (search fields, navigation, menus)
+
+**Rules:**
+1. Use `open_app` to launch apps, NOT tap on app icons
+2. UI tree is provided upfront - no need to start scripts with observe
+3. Use `if_exists` for elements that may or may not appear (popups, cookie banners, permission dialogs)
+4. Use observe mid-script and at the beginning only to capture baseline for `assert_screen_changed`
 
 ## DSL Execution Endpoint
 
@@ -59,7 +88,6 @@ All automation happens through a single endpoint:
   ]
 }
 ```
-
 Response contains UI elements:
 ```json
 {
@@ -89,21 +117,34 @@ Response contains UI elements:
 }
 ```
 
-### Type Text (after tapping input)
+### Type Text (keyboard must be open or use predicate)
+
+**Option A - Tap input first, then type:**
 ```json
 {
   "version": "0.2",
   "steps": [
     {"action": "tap", "predicate": {"type": "input"}},
     {"action": "delay", "duration_ms": 300},
-    {"action": "type", "text": "Hello World", "clear_first": true}
+    {"action": "type", "text": "Hello World", "clear_first": true},
+    {"action": "press_key", "key": "enter"}
+  ]
+}
+```
+
+**Option B - Use predicate (taps and types in one action):**
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "type", "text": "Hello World", "predicate": {"text_contains": "Search"}}
   ]
 }
 ```
 
 Options for type action:
 - `clear_first`: Clear existing text before typing (default: false)
-- `dismiss_keyboard`: Dismiss keyboard after typing (default: true)
+- `dismiss_keyboard`: Dismiss keyboard after typing (default: false). Use `press_key` with `enter` to submit instead.
 
 ### Swipe (raw gesture)
 ```json
@@ -223,7 +264,7 @@ Only taps if the current state differs from desired state. Returns `toggled`, `p
 }
 ```
 
-If `predicate` is provided, the executor finds the element, taps it if not already focused, then types. If no predicate specified and no keyboard is visible, it auto-focuses the first visible input field.
+If `predicate` is provided, the executor finds the element, taps it, then types. If no predicate specified, keyboard MUST already be open (tap an input field first), otherwise an error is returned: "no predicate specified and keyboard is not open".
 
 ### Assertions - Verify UI State
 ```json
@@ -418,8 +459,9 @@ Common error codes:
 | Observe+Screenshot | `{"action": "observe", "context": "native", "include": ["ui_tree", "screenshot"]}` |
 | List Apps | `{"action": "observe", "context": "native", "include": ["installed_apps"]}` |
 | Tap | `{"action": "tap", "predicate": {"text_contains": "Submit"}}` |
-| Type | `{"action": "type", "text": "Hello", "clear_first": true}` |
-| Type into Element | `{"action": "type", "text": "Hello", "predicate": {"type": "input"}}` |
+| Type (keyboard open) | `{"action": "type", "text": "Hello", "clear_first": true}` |
+| Type with predicate | `{"action": "type", "text": "Hello", "predicate": {"text_contains": "Search"}}` |
+| Press Key | `{"action": "press_key", "key": "enter"}` |
 | Toggle | `{"action": "toggle", "predicate": {"type": "switch", "text_contains": "Wi-Fi"}, "state": "on"}` |
 | Swipe | `{"action": "swipe", "direction": "up", "distance": "medium"}` |
 | Wait | `{"action": "wait_for", "predicate": {"text": "Welcome"}, "timeout_ms": 5000}` |
