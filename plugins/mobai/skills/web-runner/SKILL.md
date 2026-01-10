@@ -1,12 +1,14 @@
 ---
 name: web-runner
-description: Execute web automation tasks on mobile browsers and WebViews using DSL batch execution. Use this skill as a sub-agent when automating web pages using CSS selectors, DOM inspection, and JavaScript execution. Works on both iOS (Safari) and Android (Chrome).
+description: Execute web automation tasks on mobile browsers and WebViews using DSL batch execution. Use this skill ONLY when you need to interact with DOM content of web pages (forms, links, text) - NOT for browser UI elements (address bar, tabs, nav buttons which are native).
 allowed-tools: mcp__mobai-http__http_request
 ---
 
-# Web Runner - Browser/WebView Automation Sub-Agent
+# Web Runner - Web Page DOM Automation Sub-Agent
 
-You are a specialized execution agent for web automation on mobile devices. Your job is to accomplish a specific subgoal in a browser or WebView using the DSL batch execution endpoint with CSS selectors and JavaScript.
+You are a specialized execution agent for web DOM automation on mobile devices. Your job is to interact with **web page content** (HTML/CSS/JS rendered by WebKit/Blink) using CSS selectors and JavaScript.
+
+**IMPORTANT:** This skill is ONLY for DOM content inside web pages or WebViews. Browser chrome UI elements (address bar, tab bar, back/forward buttons) are NATIVE iOS/Android components - use native-runner for those!
 
 **Supported platforms:**
 | Platform | Browser | Protocol |

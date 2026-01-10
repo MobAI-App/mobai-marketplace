@@ -31,7 +31,8 @@ For complex automation tasks, use a **hierarchical approach** with specialized s
 |----------|----------|
 | Simple query (list devices, take screenshot) | Direct API call |
 | Native app automation (Settings, Instagram) | Spawn **native-runner** sub-agent |
-| Web automation (Safari, WebViews) | Spawn **web-runner** sub-agent |
+| Browser chrome (URL bar, tabs, nav buttons) | Spawn **native-runner** sub-agent |
+| Web page DOM content (forms, links, text) and webview | Spawn **web-runner** sub-agent (ONLY for DOM) |
 | Complex multi-step task | Break into subgoals, spawn appropriate sub-agent for each |
 
 ### Native Runner (`/native-runner`)
@@ -51,10 +52,13 @@ Device ID: [deviceId]
 
 ### Web Runner (`/web-runner`)
 
-Use for **browsers and WebViews** - web content on any platform:
-- **iOS**: Safari tabs, WebViews in apps
-- **Android**: Chrome tabs, WebViews in apps
-- Any web page where you need CSS selectors
+**ONLY use for interacting with web page DOM content** - the actual HTML/CSS/JS rendered inside a browser or WebView:
+- Filling out forms on web pages
+- Clicking links or buttons rendered by HTML
+- Reading text content from web pages
+- Executing JavaScript on the page
+
+**DO NOT use for browser UI elements** (address bar, tabs, back button) - those are native!
 
 **Uses DSL batch execution** with CSS selectors and JavaScript.
 
@@ -174,21 +178,28 @@ POST /devices/{id}/agent/run    # {"task": "...", "agentType": "toolagent"}
 
 ## Choosing Between Native and Web Mode
 
+**CRITICAL: Browser apps (Safari, Chrome) have TWO zones:**
+1. **Browser chrome (NATIVE)**: address bar, tab bar, back/forward buttons, share button, bookmarks → use **native-runner**
+2. **Web content viewport (WEB)**: the actual webpage content inside the browser → use **web-runner**
+
 **Use Native Mode (native-runner) when:**
 - Working with native app UI (buttons, switches, lists)
+- Interacting with browser chrome: URL bar, navigation buttons, tab switching
 - Tapping by element predicate (text, type, label)
 - UI tree shows native components (Button, TextField, Switch)
 
-**Use Web Mode (web-runner) when:**
-- A browser is open (Safari on iOS, Chrome on Android)
-- An app shows a WebView (login forms, embedded content)
-- Need CSS selectors for precise element targeting
-- Native taps aren't working on web content
+**Use Web Mode (web-runner) ONLY when:**
+- You need to interact with the DOM content of a web page or WebView
+- Filling HTML forms, clicking HTML links/buttons, or reading text from web pages
+- You need CSS selectors to target elements rendered by HTML/CSS/JS
+- Native taps aren't working because the content is rendered by WebKit/Blink engine
+
+**NEVER use web-runner for:** browser chrome UI (address bar, tabs, navigation buttons) - always use native-runner for those!
 
 **Detection Tips:**
-1. Get UI tree first - if it shows web-like elements (WebView), consider web mode
-2. If native tap fails on expected element, try web mode
-3. Check the current app - Safari/Chrome usually means web mode
+1. Get UI tree first - if it shows web-like elements (WebView), the CONTENT is web mode
+2. Browser UI elements (address bar, tabs) are ALWAYS native even when Safari/Chrome is open
+3. If native tap fails on expected element inside webpage, try web mode
 
 ## Important Notes
 
