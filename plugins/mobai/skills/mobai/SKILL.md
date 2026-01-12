@@ -58,6 +58,8 @@ Use web-runner when you need to interact with DOM content inside a web page or W
 - You need to execute JavaScript on the page
 - You need to read/manipulate DOM content programmatically
 
+**IMPORTANT: iOS Simulators NOT supported** - Web context requires a physical iOS device. Use native-runner for simulators.
+
 **Try native-runner first** - it works for most web page interactions via accessibility tree.
 
 **DO NOT use for browser UI elements** (address bar, tabs, back button) - those are native!

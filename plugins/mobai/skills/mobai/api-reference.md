@@ -362,8 +362,10 @@ These endpoints provide web automation capabilities for browsers and WebViews on
 
 | Platform | Protocol | Supported Browsers |
 |----------|----------|-------------------|
-| iOS | WebInspector | Safari, WebViews |
+| iOS (Physical devices only) | WebInspector | Safari, WebViews |
 | Android | Chrome DevTools Protocol (CDP) | Chrome, WebViews |
+
+**IMPORTANT: iOS Simulators are NOT supported for web automation.** WebInspector protocol only works with physical iOS devices. For iOS simulators, use native UI automation instead.
 
 **Note:** On Android, ensure Chrome has remote debugging enabled or the WebView is debuggable.
 
