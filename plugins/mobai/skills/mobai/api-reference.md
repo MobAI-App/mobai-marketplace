@@ -89,14 +89,18 @@ Get UI accessibility tree.
 - `onlyVisible` (optional) - Filter to visible elements only. Default: `true`
   - `true` or omitted: Returns only visible elements with valid bounds
   - `false` or `0`: Returns all elements including invisible ones
+- `includeKeyboard` (optional) - Include keyboard elements in the tree. Default: `false`
+  - `false` or omitted: Excludes on-screen keyboard elements
+  - `true`: Includes keyboard elements (useful for interacting with on-screen keyboards)
 - `verbose` (optional) - Include full elements array. Default: `false`
   - `false` or omitted: Returns only the tree string (compact mode)
   - `true`: Returns tree string plus elements array with coordinates
 
 **Examples:**
 ```
-GET /devices/{id}/ui-tree              # compact mode (default)
-GET /devices/{id}/ui-tree?verbose=true # include elements array
+GET /devices/{id}/ui-tree                        # compact mode (default)
+GET /devices/{id}/ui-tree?verbose=true           # include elements array
+GET /devices/{id}/ui-tree?includeKeyboard=true   # include keyboard elements
 GET /devices/{id}/ui-tree?onlyVisible=false&verbose=true  # all elements with full data
 ```
 
@@ -120,7 +124,7 @@ GET /devices/{id}/ui-tree?onlyVisible=false&verbose=true  # all elements with fu
 }
 ```
 
-**Note:** Use `?verbose=true` only when you need element coordinates for coordinate-based taps. The compact mode significantly reduces response size. For iOS devices, invisible elements are those with `visible="false"` attribute or zero dimensions.
+**Note:** Use `?verbose=true` only when you need element coordinates for coordinate-based taps. The compact mode significantly reduces response size. For iOS devices, invisible elements are those with `visible="false"` attribute or zero dimensions. Use `?includeKeyboard=true` when you need to interact with on-screen keyboard keys or to identify if keyboard is open for secure fields (iOS).
 
 ---
 

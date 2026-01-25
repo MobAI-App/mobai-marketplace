@@ -28,6 +28,14 @@ To include invisible elements (useful for finding hidden UI):
 }
 ```
 
+To include keyboard elements (useful for interacting with on-screen keyboards):
+```json
+{
+  "method": "GET",
+  "url": "http://127.0.0.1:8686/api/v1/devices/{deviceId}/ui-tree?includeKeyboard=true"
+}
+```
+
 Take a screenshot for visual context (saved to file automatically):
 ```json
 {
@@ -299,6 +307,7 @@ Response:
 - For iOS devices, the bridge may take longer to start (up to 60 seconds)
 - **Screenshots are saved to `/tmp/mobai/screenshots/` by default** - use the Read tool to view them
 - **Use `?verbose=true` on `/ui-tree` only when you need element coordinates** for coordinate-based taps - compact mode is faster and reduces response size
+- **Use `?includeKeyboard=true` on `/ui-tree` when you need to interact with on-screen keyboard keys or identify if keyboard is open for secure fields (iOS)**
 
 ## Web Automation Tips
 
