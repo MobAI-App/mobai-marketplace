@@ -126,6 +126,25 @@ GET /devices/{id}/ui-tree?onlyVisible=false&verbose=true  # all elements with fu
 
 **Note:** Use `?verbose=true` only when you need element coordinates for coordinate-based taps. The compact mode significantly reduces response size. For iOS devices, invisible elements are those with `visible="false"` attribute or zero dimensions. Use `?includeKeyboard=true` when you need to interact with on-screen keyboard keys or to identify if keyboard is open for secure fields (iOS).
 
+### GET /devices/{id}/ocr
+Perform OCR text recognition on the current screen. **iOS only.**
+Returns detected text with screen coordinates for tapping (already adjusted for tapping).
+
+**Timeout:** 10 seconds
+
+**Response:**
+```json
+{
+  "elements": [
+    {"text": "Sign In", "confidence": 0.98, "x": 150, "y": 400, "width": 100, "height": 30},
+    {"text": "Password", "confidence": 0.95, "x": 50, "y": 300, "width": 80, "height": 25}
+  ],
+  "imageSize": {"width": 1170, "height": 2532},
+  "screenSize": {"width": 390, "height": 844},
+  "scale": 3.0
+}
+```
+
 ---
 
 ## UI Operations
@@ -872,6 +891,7 @@ The `observe` action's `include` field accepts an array of data types to retriev
 | `screenshot` | Base64-encoded PNG screenshot | `observations.native.screenshot` |
 | `activity` | Current app activity/screen name | `observations.native.activity` |
 | `installed_apps` | List of installed applications | `observations.native.installed_apps` |
+| `ocr` | Text detected via OCR with coordinates (iOS only) | `observations.native.ocr_elements` |
 
 **Example - Get installed apps:**
 ```json

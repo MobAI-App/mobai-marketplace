@@ -146,6 +146,12 @@ Options for type action:
 - `clear_first`: Clear existing text before typing (default: false)
 - `dismiss_keyboard`: Dismiss keyboard after typing (default: false). Use `press_key` with `enter` to submit instead.
 
+### Dismissing Keyboard
+
+- Use `press_key: enter` to submit and close the keyboard
+- If submit is not desired, look for a "Close", "Cancel", "Done" or "Back" button in the UI tree and tap it
+- On Android, `press_key: back` also dismisses the keyboard
+
 ### Swipe (raw gesture)
 ```json
 {
@@ -355,6 +361,30 @@ Response contains app list:
 
 Use this to find the correct `bundleId` for `open_app` actions.
 
+### OCR Text Recognition (iOS only)
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "observe", "context": "native", "include": ["ocr"]}
+  ]
+}
+```
+
+Returns detected text with screen coordinates for tapping (already adjusted for tapping):
+```json
+{
+  "ocr_elements": [
+    {"text": "Sign In", "confidence": 0.98, "x": 150, "y": 400, "width": 100, "height": 30}
+  ]
+}
+```
+
+Use when UI tree doesn't show expected elements. Tap using coordinates from results:
+```json
+{"action": "tap", "coords": {"x": 200, "y": 415}}
+```
+
 ## Predicate Reference
 
 Match elements using these fields:
@@ -458,6 +488,7 @@ Common error codes:
 | Observe | `{"action": "observe", "context": "native", "include": ["ui_tree"]}` |
 | Observe+Screenshot | `{"action": "observe", "context": "native", "include": ["ui_tree", "screenshot"]}` |
 | List Apps | `{"action": "observe", "context": "native", "include": ["installed_apps"]}` |
+| OCR (iOS) | `{"action": "observe", "context": "native", "include": ["ocr"]}` |
 | Tap | `{"action": "tap", "predicate": {"text_contains": "Submit"}}` |
 | Type (keyboard open) | `{"action": "type", "text": "Hello", "clear_first": true}` |
 | Type with predicate | `{"action": "type", "text": "Hello", "predicate": {"text_contains": "Search"}}` |
