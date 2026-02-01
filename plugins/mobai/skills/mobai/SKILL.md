@@ -180,6 +180,24 @@ POST /devices/{id}/collect-list          # Collect all list items
 POST /devices/{id}/agent/run    # {"task": "...", "agentType": "toolagent"}
 ```
 
+### Performance Metrics (Via DSL)
+
+Use `metrics_start` and `metrics_stop` DSL actions for performance testing:
+
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "metrics_start", "types": ["system_cpu", "system_memory", "fps", "network", "battery"], "capture_logs": true, "label": "test"},
+    {"action": "open_app", "bundle_id": "com.example.app"},
+    {"action": "delay", "duration_ms": 5000},
+    {"action": "metrics_stop", "format": "summary"}
+  ]
+}
+```
+
+Returns health score, anomalies, and recommendations. Metric types: `system_cpu`, `system_memory`, `fps`, `network`, `battery`, `process`.
+
 ## Choosing Between Native and Web Mode
 
 **CRITICAL: Browser apps (Safari, Chrome) have TWO zones:**

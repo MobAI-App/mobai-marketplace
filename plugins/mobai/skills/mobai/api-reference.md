@@ -690,6 +690,8 @@ Execute a batch of DSL steps with automatic retry and error handling.
 | `execute_js` | Run JavaScript (web) | `script` |
 | `select_web_context` | Select web page | `page_id`, `url_contains`, `title_contains` |
 | `if_exists` | Conditional execution | `predicate`, `then`, `else` |
+| `metrics_start` | Start performance monitoring | `types`, `bundle_id`, `label`, `thresholds`, `capture_logs` |
+| `metrics_stop` | Stop monitoring, get summary | `format` ("summary" or "detailed") |
 
 **Note on `type` action:** Requires either:
 - `predicate` field to target an input element, OR
@@ -920,4 +922,104 @@ The `observe` action's `include` field accepts an array of data types to retriev
       }
     }
   }]
+}
+```
+
+---
+
+## Performance Metrics
+
+Collect and analyze CPU, memory, FPS, network, and battery metrics during test flows.
+
+### POST /devices/{id}/metrics/start
+Start metrics collection session.
+
+**Request:**
+```json
+{
+  "types": ["system_cpu", "system_memory", "fps"],
+  "interval": 1000,
+  "bundleId": "com.example.app",
+  "label": "login_flow",
+  "capture_logs": true,
+  "thresholds": {
+    "cpu_high": 80,
+    "fps_low": 45,
+    "memory_growth_mb_min": 50
+  }
+}
+```
+
+- `types`: Metrics to collect - `system_cpu`, `system_memory`, `fps`, `network`, `battery`
+- `interval`: Sampling interval in milliseconds (default: 1000)
+- `bundleId`: Filter to specific app (optional)
+- `label`: Human-readable session label (optional)
+- `thresholds`: Custom anomaly detection thresholds (optional)
+- `capture_logs`: Capture device logs during session (default: false)
+
+**Response:**
+```json
+{"sessionId": "abc123", "started": true}
+```
+
+### POST /devices/{id}/metrics/stop
+Stop collection and get summary.
+
+**Request:**
+```json
+{"format": "summary"}
+```
+
+**Response:**
+```json
+{
+  "metrics_summary": {
+    "session": {
+      "label": "login_flow",
+      "duration_seconds": 45.2,
+      "sample_count": 45,
+      "session_id": "abc123",
+      "data_file": "/tmp/mobai/metrics/abc123.jsonl",
+      "logs_file": "/tmp/mobai/logs/abc123.jsonl",
+      "logs_available": true
+    },
+    "overall_health": "warning",
+    "health_score": 72,
+    "system_cpu": {"avg": 34.5, "max": 89.2, "p95": 78.1, "status": "ok"},
+    "system_memory": {"avg_percent": 45.2, "growth_mb": 28.5, "trend": "increasing", "status": "warning"},
+    "fps": {"avg": 58.2, "min": 24.0, "jank_percent": 8.5, "status": "warning"},
+    "anomalies": {
+      "cpu_spikes": [
+        {"at_s": 0.5, "peak": 288, "duration_ms": 18147, "source": "system"}   
+      ],
+      "fps_drops": [
+        {"start_s": 1.2, "end_s": 16.8, "min_fps": 39.5, "avg_fps": 42.3, "samples": 1}
+      ],
+    },
+    "recommendations": [
+      "FPS dropped to 24 at +15s - investigate screen transition"
+    ]
+  }
+}
+```
+
+### GET /devices/{id}/metrics
+Get raw metrics buffer (current samples).
+
+### GET /devices/{id}/metrics/summary
+Get current summary without stopping collection.
+
+### DSL Metrics Actions
+
+Use within DSL scripts for integrated performance testing:
+
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "metrics_start", "types": ["system_cpu", "system_memory", "fps"], "label": "app_test"},
+    {"action": "open_app", "bundle_id": "com.example.app"},
+    {"action": "delay", "duration_ms": 5000},
+    {"action": "metrics_stop", "format": "summary"}
+  ]
 }

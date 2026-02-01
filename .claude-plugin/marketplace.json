@@ -12,7 +12,7 @@
       "name": "mobai",
       "source": "./plugins/mobai",
       "description": "Control Android and iOS devices, emulators, and simulators through MobAI HTTP API",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": {
         "name": "MobAI",
         "email": "contact@mobai.run",

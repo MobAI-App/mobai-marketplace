@@ -501,6 +501,65 @@ Common error codes:
 | Assert Count | `{"action": "assert_count", "predicate": {"type": "button"}, "expected": 2}` |
 | Assert Property | `{"action": "assert_property", "predicate": {"text": "Submit"}, "property": "enabled", "expected_value": true}` |
 | Assert Screen Changed | `{"action": "assert_screen_changed", "threshold_percent": 15}` |
+| Metrics Start | `{"action": "metrics_start", "types": ["system_cpu", "system_memory", "fps"], "capture_logs": true, "label": "test"}` |
+| Metrics Stop | `{"action": "metrics_stop", "format": "summary"}` |
+
+## Performance Metrics
+
+Collect CPU, memory, FPS, and other metrics during test flows for performance analysis.
+
+### Start Metrics Collection
+```json
+{
+  "action": "metrics_start",
+  "types": ["system_cpu", "system_memory", "fps"],
+  "bundle_id": "com.example.app",
+  "label": "login_flow",
+  "thresholds": {
+    "cpu_high": 80,
+    "fps_low": 45,
+    "memory_growth_mb_min": 50
+  }
+}
+```
+
+**Fields:**
+- `types`: Metrics to collect - `system_cpu`, `system_memory`, `fps`, `network`, `battery`
+- `bundle_id`: Filter to specific app (optional)
+- `label`: Human-readable session label (optional)
+- `capture_logs`: Capture device logs during session (default: false)
+- `thresholds`: Custom anomaly detection thresholds (optional)
+
+### Stop and Get Summary
+```json
+{"action": "metrics_stop", "format": "summary"}
+```
+
+**Response includes:**
+- `overall_health`: "healthy", "warning", or "critical"
+- `health_score`: 0-100 score
+- `system_cpu`: avg, max, p95, status
+- `system_memory`: avg_percent, growth_mb, trend, status
+- `fps`: avg, min, jank_percent, status
+- `logs_file`: Path to detailed metrics log file
+- `logs_available`: Whether logs were captured
+- `anomalies`: Detected issues with severity and timestamps
+- `recommendations`: Actionable suggestions
+
+### Example: Performance Test
+```json
+{
+  "version": "0.2",
+  "steps": [
+    {"action": "metrics_start", "types": ["system_cpu", "system_memory", "fps"], "label": "app_launch"},
+    {"action": "open_app", "bundle_id": "com.example.app"},
+    {"action": "wait_for", "predicate": {"text": "Welcome"}, "timeout_ms": 10000},
+    {"action": "tap", "predicate": {"text": "Login"}},
+    {"action": "delay", "duration_ms": 5000},
+    {"action": "metrics_stop", "format": "summary"}
+  ]
+}
+```
 
 ## Reporting Results
 
