@@ -495,12 +495,20 @@ Common error codes:
 | Press Key | `{"action": "press_key", "key": "enter"}` |
 | Toggle | `{"action": "toggle", "predicate": {"type": "switch", "text_contains": "Wi-Fi"}, "state": "on"}` |
 | Swipe | `{"action": "swipe", "direction": "up", "distance": "medium"}` |
-| Wait | `{"action": "wait_for", "predicate": {"text": "Welcome"}, "timeout_ms": 5000}` |
+| Wait | `{"action": "wait_for", "predicate": {"text": "Welcome"}, "timeout_ms": 5000, "poll_interval_ms": 500}` |
+| Wait Stable | `{"action": "wait_for", "stable": true, "timeout_ms": 5000, "poll_interval_ms": 500}` |
+| Screenshot | `{"action": "screenshot", "file_path": "/tmp/screenshots", "name": "my_screen"}` |
 | Assert Exists | `{"action": "assert_exists", "predicate": {"text": "Success"}, "timeout_ms": 3000}` |
 | Assert Not Exists | `{"action": "assert_not_exists", "predicate": {"text": "Error"}}` |
 | Assert Count | `{"action": "assert_count", "predicate": {"type": "button"}, "expected": 2}` |
 | Assert Property | `{"action": "assert_property", "predicate": {"text": "Submit"}, "property": "enabled", "expected_value": true}` |
 | Assert Screen Changed | `{"action": "assert_screen_changed", "threshold_percent": 15}` |
+| Double Tap | `{"action": "double_tap", "predicate": {"text_contains": "Photo"}}` |
+| Two Finger Tap | `{"action": "two_finger_tap", "coords": {"x": 200, "y": 400}}` (iOS only) |
+| Drag | `{"action": "drag", "from_coords": {"x": 100, "y": 200}, "to_coords": {"x": 300, "y": 400}, "duration_ms": 500}` |
+| Kill App | `{"action": "kill_app", "bundle_id": "com.example.app"}` |
+| Set Location | `{"action": "set_location", "lat": 40.7128, "lon": -74.0060}` (Android 12+ for real devices) |
+| Reset Location | `{"action": "reset_location"}` (Android 12+ for real devices) |
 | Metrics Start | `{"action": "metrics_start", "types": ["system_cpu", "system_memory", "fps"], "capture_logs": true, "label": "test"}` |
 | Metrics Stop | `{"action": "metrics_stop", "format": "summary"}` |
 

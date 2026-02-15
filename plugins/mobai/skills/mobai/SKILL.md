@@ -180,6 +180,20 @@ POST /devices/{id}/collect-list          # Collect all list items
 POST /devices/{id}/agent/run    # {"task": "...", "agentType": "toolagent"}
 ```
 
+### App Management (Direct API)
+
+```
+POST /devices/{id}/kill-app          # Force-kill app: {"bundleId": "..."}
+DELETE /devices/{id}/apps/{bundleId} # Uninstall app by bundle ID
+```
+
+### Location Simulation (Direct API)
+
+```
+POST /devices/{id}/location          # Set GPS: {"lat": 40.71, "lon": -74.00}
+DELETE /devices/{id}/location        # Reset to real GPS
+```
+
 ### Performance Metrics (Via DSL)
 
 Use `metrics_start` and `metrics_stop` DSL actions for performance testing:

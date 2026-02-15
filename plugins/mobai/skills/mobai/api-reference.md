@@ -55,7 +55,7 @@ Get specific device info.
 ### GET /devices/{id}/screenshot
 Capture device screenshot.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Query Parameters:**
 - `format` (optional) - Response format. Default: file path
@@ -83,7 +83,7 @@ The default mode saves the screenshot to `/tmp/mobai/screenshots/` and returns t
 ### GET /devices/{id}/ui-tree
 Get UI accessibility tree.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Query Parameters:**
 - `onlyVisible` (optional) - Filter to visible elements only. Default: `true`
@@ -130,7 +130,7 @@ GET /devices/{id}/ui-tree?onlyVisible=false&verbose=true  # all elements with fu
 Perform OCR text recognition on the current screen. **iOS only.**
 Returns detected text with screen coordinates for tapping (already adjusted for tapping).
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Response:**
 ```json
@@ -152,9 +152,69 @@ Returns detected text with screen coordinates for tapping (already adjusted for 
 ### POST /devices/{id}/tap
 Tap at coordinates or element index.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request (by index - preferred):**
+```json
+{"index": 5}
+```
+
+**Request (by coordinates):**
+```json
+{"x": 100, "y": 200}
+```
+
+**Response:**
+```json
+{"success": true, "data": {"x": 100, "y": 200}}
+```
+
+### POST /devices/{id}/double-tap
+Double tap at coordinates or element index.
+
+**Timeout:** 15 seconds
+
+**Request (by index - preferred):**
+```json
+{"index": 5}
+```
+
+**Request (by coordinates):**
+```json
+{"x": 100, "y": 200}
+```
+
+**Response:**
+```json
+{"success": true, "data": {"x": 100, "y": 200}}
+```
+
+### POST /devices/{id}/long-press
+Long press at coordinates or element index. Uses a fixed 0.5s hold duration.
+
+**Timeout:** 15 seconds
+
+**Request (by index):**
+```json
+{"index": 5}
+```
+
+**Request (by coordinates):**
+```json
+{"x": 100, "y": 200}
+```
+
+**Response:**
+```json
+{"success": true, "data": {"x": 100, "y": 200}}
+```
+
+### POST /devices/{id}/two-finger-tap
+Two-finger tap at coordinates or element index. **iOS only.**
+
+**Timeout:** 15 seconds
+
+**Request (by index):**
 ```json
 {"index": 5}
 ```
@@ -172,7 +232,7 @@ Tap at coordinates or element index.
 ### POST /devices/{id}/swipe
 Perform swipe gesture.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request:**
 ```json
@@ -186,6 +246,41 @@ Perform swipe gesture.
 ```
 
 - `duration`: milliseconds (default: 300 if omitted)
+
+**Response:**
+```json
+{"success": true}
+```
+
+### POST /devices/{id}/drag
+Drag from one point to another (press, hold, move, release).
+
+**Timeout:** 15 seconds
+
+**Request:**
+```json
+{
+  "fromX": 100,
+  "fromY": 200,
+  "toX": 300,
+  "toY": 400,
+  "duration": 500,
+  "pressDuration": 0
+}
+```
+
+- `duration`: drag duration in milliseconds (default: 500)
+- `pressDuration`: hold before dragging in milliseconds (default: 0 = no hold). Use for press-and-drag gestures like moving app icons.
+
+**Response:**
+```json
+{"success": true}
+```
+
+### POST /devices/{id}/dismiss-keyboard
+Dismiss the on-screen keyboard if visible.
+
+**Timeout:** 15 seconds
 
 **Response:**
 ```json
@@ -210,7 +305,7 @@ Type text on device.
 ### POST /devices/{id}/go-home
 Navigate to device home screen.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Response:**
 ```json
@@ -239,7 +334,7 @@ Open URL in device browser.
 ### GET /devices/{id}/apps
 List installed applications.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Response:**
 ```json
@@ -252,7 +347,7 @@ List installed applications.
 ### POST /devices/{id}/launch-app
 Launch application by bundle ID.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request:**
 ```json
@@ -273,6 +368,52 @@ Install APK (Android) or IPA (iOS) from file path.
 ```json
 {"path": "/path/to/app.apk"}
 ```
+
+**Response:**
+```json
+{"success": true}
+```
+
+### DELETE /devices/{id}/apps/{bundleId}
+Uninstall an application from the device.
+
+**Timeout:** 30 seconds
+
+**Response:**
+```json
+{"success": true}
+```
+
+### POST /devices/{id}/kill-app
+Force-kill a running application. On iOS (17+), uses CoreDevice appservice SIGKILL. On Android, uses `am force-stop`.
+
+**Timeout:** 30 seconds
+
+**Request:**
+```json
+{"bundleId": "com.apple.mobilesafari"}
+```
+
+**Response:**
+```json
+{"success": true}
+```
+
+### POST /devices/{id}/location
+Set a simulated GPS location on the device. Supports: iOS (all versions), Android emulators (all versions), Android real devices (12+ only).
+
+**Request:**
+```json
+{"lat": 40.7128, "lon": -74.0060}
+```
+
+**Response:**
+```json
+{"success": true}
+```
+
+### DELETE /devices/{id}/location
+Reset the device location to its real GPS position. Supports: iOS (all versions), Android emulators (all versions), Android real devices (12+ only).
 
 **Response:**
 ```json
@@ -322,7 +463,7 @@ Start on-device bridge (accessibility service on Android, WDA on iOS).
 ### POST /devices/{id}/bridge/stop
 Stop on-device bridge.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Response:**
 ```json
@@ -395,7 +536,7 @@ These endpoints provide web automation capabilities for browsers and WebViews on
 ### GET /devices/{id}/web/pages
 List available web pages (browser tabs and WebViews).
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Response (iOS):**
 ```json
@@ -428,7 +569,7 @@ List available web pages (browser tabs and WebViews).
 ### POST /devices/{id}/web/select
 Select a web page to control.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request:**
 ```json
@@ -477,7 +618,7 @@ Navigate to a URL in the selected web page.
 ### POST /devices/{id}/web/click
 Click an element using CSS selector.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request:**
 ```json
@@ -499,7 +640,7 @@ Click an element using CSS selector.
 ### POST /devices/{id}/web/type
 Type text into an element using CSS selector.
 
-**Timeout:** 10 seconds
+**Timeout:** 15 seconds
 
 **Request:**
 ```json
@@ -675,12 +816,16 @@ Execute a batch of DSL steps with automatic retry and error handling.
 | `type` | Type text | `text`, `predicate` (required if keyboard not open), `clear_first`, `dismiss_keyboard` (default: false) |
 | `toggle` | Set switch/checkbox to state | `predicate`, `state` ("on"/"off") |
 | `swipe` | Swipe gesture | `direction`, `distance`, `duration_ms` |
-| `long_press` | Long press | `predicate`, `coords`, `duration_ms` |
+| `double_tap` | Double tap element | `predicate`, `coords` |
+| `two_finger_tap` | Two-finger tap (iOS only) | `predicate`, `coords` |
+| `drag` | Drag from point to point | `from_coords`, `to_coords`, `duration_ms`, `press_duration_ms` |
+| `long_press` | Long press (0.5s) | `predicate`, `coords` |
 | `scroll` | Single scroll or scroll until found `element` | `direction`, `predicate` (container), `to_element` (target), `max_scrolls` |
 | `open_app` | Launch app | `bundle_id` |
 | `navigate` | Go home/back or URL | `target`, `url` |
 | `press_key` | Press key | `key`, `context` (optional: "web" for JS keyboard events - supports enter, tab, delete, escape) |
-| `wait_for` | Wait for element | `predicate`, `timeout_ms` |
+| `wait_for` | Wait for element or UI stability | `predicate`, `timeout_ms`, `stable` (wait for UI to stop changing) |
+| `screenshot` | Save screenshot to file | `file_path` (directory), `name` (optional filename) |
 | `assert_exists` | Verify element exists | `predicate`, `timeout_ms`, `message` |
 | `assert_not_exists` | Verify element does NOT exist | `predicate`, `message` |
 | `assert_count` | Verify element count | `predicate`, `expected`, `message` |
@@ -690,6 +835,10 @@ Execute a batch of DSL steps with automatic retry and error handling.
 | `execute_js` | Run JavaScript (web) | `script` |
 | `select_web_context` | Select web page | `page_id`, `url_contains`, `title_contains` |
 | `if_exists` | Conditional execution | `predicate`, `then`, `else` |
+| `screenshot` | Save screenshot to file | `file_path` (directory), `name` (optional filename) |
+| `kill_app` | Force-kill running app | `bundle_id` |
+| `set_location` | Simulate GPS location (Android 12+ for real devices) | `lat`, `lon` |
+| `reset_location` | Reset to real GPS (Android 12+ for real devices) | (no fields) |
 | `metrics_start` | Start performance monitoring | `types`, `bundle_id`, `label`, `thresholds`, `capture_logs` |
 | `metrics_stop` | Stop monitoring, get summary | `format` ("summary" or "detailed") |
 
