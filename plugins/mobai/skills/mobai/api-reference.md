@@ -95,6 +95,8 @@ Get UI accessibility tree.
 - `verbose` (optional) - Include full elements array. Default: `false`
   - `false` or omitted: Returns only the tree string (compact mode)
   - `true`: Returns tree string plus elements array with coordinates
+- `textRegex` (optional) - Regex to filter elements by text/value/contentDesc. Only matching elements are returned.
+- `boundsX`, `boundsY`, `boundsW`, `boundsH` (optional) - Filter to elements fully contained within this rectangle.
 
 **Examples:**
 ```
@@ -102,6 +104,8 @@ GET /devices/{id}/ui-tree                        # compact mode (default)
 GET /devices/{id}/ui-tree?verbose=true           # include elements array
 GET /devices/{id}/ui-tree?includeKeyboard=true   # include keyboard elements
 GET /devices/{id}/ui-tree?onlyVisible=false&verbose=true  # all elements with full data
+GET /devices/{id}/ui-tree?textRegex=Settings     # only elements with "Settings" in text
+GET /devices/{id}/ui-tree?boundsX=0&boundsY=0&boundsW=200&boundsH=400  # elements in region
 ```
 
 **Response (default - compact):**
@@ -811,7 +815,7 @@ Execute a batch of DSL steps with automatic retry and error handling.
 
 | Action | Description | Key Fields |
 |--------|-------------|------------|
-| `observe` | Get UI tree/screenshot/installed apps | `context`, `include` (ui_tree, screenshot, activity, installed_apps), `include_keyboard` |
+| `observe` | Get UI tree/screenshot/installed apps | `context`, `include` (ui_tree, screenshot, activity, installed_apps), `include_keyboard`, `filter` ({text_regex, bounds}) |
 | `tap` | Tap element or coordinates | `predicate`, `coords`, `selector` |
 | `type` | Type text | `text`, `predicate` (required if keyboard not open), `clear_first`, `dismiss_keyboard` (default: false) |
 | `toggle` | Set switch/checkbox to state | `predicate`, `state` ("on"/"off") |
@@ -1043,6 +1047,33 @@ The `observe` action's `include` field accepts an array of data types to retriev
 | `activity` | Current app activity/screen name | `observations.native.activity` |
 | `installed_apps` | List of installed applications | `observations.native.installed_apps` |
 | `ocr` | Text detected via OCR with coordinates (iOS only) | `observations.native.ocr_elements` |
+
+### Observe Filter
+
+The `observe` action supports an optional `filter` field to reduce UI tree output:
+
+| Filter Field | Type | Description |
+|-------------|------|-------------|
+| `text_regex` | string | Regex to match element text/value/contentDesc |
+| `bounds` | object | `{x, y, width, height}` — only elements fully within this rect |
+
+**Example - Filter by text regex:**
+```json
+{"action": "observe", "context": "native", "include": ["ui_tree"],
+ "filter": {"text_regex": "(White|Black) (Pawn|Rook|Knight|Bishop|Queen|King)"}}
+```
+
+**Example - Filter by bounds:**
+```json
+{"action": "observe", "context": "native", "include": ["ui_tree"],
+ "filter": {"bounds": {"x": 0, "y": 0, "width": 200, "height": 400}}}
+```
+
+**Example - Combined filter:**
+```json
+{"action": "observe", "context": "native", "include": ["ui_tree"],
+ "filter": {"text_regex": "Button.*", "bounds": {"x": 0, "y": 100, "width": 400, "height": 600}}}
+```
 
 **Example - Get installed apps:**
 ```json

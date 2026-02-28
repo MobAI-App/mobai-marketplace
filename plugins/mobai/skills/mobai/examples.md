@@ -36,6 +36,22 @@ To include keyboard elements (useful for interacting with on-screen keyboards):
 }
 ```
 
+To filter elements by text regex (returns only matching elements):
+```json
+{
+  "method": "GET",
+  "url": "http://127.0.0.1:8686/api/v1/devices/{deviceId}/ui-tree?textRegex=Settings"
+}
+```
+
+To filter elements within a screen region:
+```json
+{
+  "method": "GET",
+  "url": "http://127.0.0.1:8686/api/v1/devices/{deviceId}/ui-tree?boundsX=0&boundsY=0&boundsW=200&boundsH=400"
+}
+```
+
 Take a screenshot for visual context (saved to file automatically):
 ```json
 {
@@ -308,6 +324,8 @@ Response:
 - **Screenshots are saved to `/tmp/mobai/screenshots/` by default** - use the Read tool to view them
 - **Use `?verbose=true` on `/ui-tree` only when you need element coordinates** for coordinate-based taps - compact mode is faster and reduces response size
 - **Use `?includeKeyboard=true` on `/ui-tree` when you need to interact with on-screen keyboard keys or identify if keyboard is open for secure fields (iOS)**
+- **Use `?textRegex=pattern` on `/ui-tree` to filter elements by text** - useful for finding specific elements in large trees
+- **Use `?boundsX=&boundsY=&boundsW=&boundsH=` on `/ui-tree` to filter elements within a screen region** - only elements fully contained in the rect are returned
 
 ## Web Automation Tips
 

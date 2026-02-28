@@ -487,6 +487,8 @@ Common error codes:
 |--------|---------|
 | Observe | `{"action": "observe", "context": "native", "include": ["ui_tree"]}` |
 | Observe+Screenshot | `{"action": "observe", "context": "native", "include": ["ui_tree", "screenshot"]}` |
+| Observe+Filter | `{"action": "observe", "context": "native", "include": ["ui_tree"], "filter": {"text_regex": "Settings"}}` |
+| Observe+Bounds | `{"action": "observe", "context": "native", "include": ["ui_tree"], "filter": {"bounds": {"x": 0, "y": 0, "width": 200, "height": 400}}}` |
 | List Apps | `{"action": "observe", "context": "native", "include": ["installed_apps"]}` |
 | OCR (iOS) | `{"action": "observe", "context": "native", "include": ["ocr"]}` |
 | Tap | `{"action": "tap", "predicate": {"text_contains": "Submit"}}` |
