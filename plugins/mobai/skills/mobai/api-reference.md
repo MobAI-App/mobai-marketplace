@@ -58,6 +58,8 @@ Capture device screenshot.
 **Timeout:** 15 seconds
 
 **Query Parameters:**
+- `path` (optional) - Custom directory to save the screenshot (supports `~/`). Example: `?path=~/Downloads`
+- `name` (optional) - Custom filename without `.png` extension. Defaults to timestamp-based name. Example: `?name=login_screen`
 - `format` (optional) - Response format. Default: file path
   - omitted: Saves screenshot to file and returns file path
   - `base64`: Returns base64-encoded data (legacy behavior)
@@ -70,6 +72,14 @@ Capture device screenshot.
 }
 ```
 
+**Response (with custom path and name):**
+```json
+{
+  "path": "/Users/you/Downloads/login_screen.png",
+  "format": "png"
+}
+```
+
 **Response (format=base64):**
 ```json
 {
@@ -78,7 +88,7 @@ Capture device screenshot.
 }
 ```
 
-The default mode saves the screenshot to `/tmp/mobai/screenshots/` and returns the file path. Use `?format=base64` for legacy base64 data.
+The default mode saves the screenshot to `/tmp/mobai/screenshots/` and returns the file path. Use `?path=` and `?name=` to save to a custom location on the host computer. Use `?format=base64` for legacy base64 data.
 
 ### GET /devices/{id}/ui-tree
 Get UI accessibility tree.
@@ -822,7 +832,7 @@ Execute a batch of DSL steps with automatic retry and error handling.
 | `swipe` | Swipe gesture | `direction`, `distance`, `duration_ms` |
 | `double_tap` | Double tap element | `predicate`, `coords` |
 | `two_finger_tap` | Two-finger tap (iOS only) | `predicate`, `coords` |
-| `drag` | Drag from point to point | `from_coords`, `to_coords`, `duration_ms`, `press_duration_ms` |
+| `drag` | Drag from point to point | `from` + `to_element` (predicate-based) OR `from_coords` + `to_coords`, `duration_ms`, `press_duration_ms` |
 | `long_press` | Long press (0.5s) | `predicate`, `coords` |
 | `scroll` | Single scroll or scroll until found `element` | `direction`, `predicate` (container), `to_element` (target), `max_scrolls` |
 | `open_app` | Launch app | `bundle_id` |

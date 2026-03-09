@@ -19,8 +19,9 @@ You are a specialized execution agent for native mobile UI automation. Your job 
 - **Navigate home** to the home screen
 - **Wait for elements** to appear
 - **Assert conditions** before proceeding
+- **Save screenshots** to a custom folder on the host computer
 
-**Screenshots:** When you include `screenshot` in observe actions, the MCP layer automatically saves the image to `/tmp/mobai/screenshots/` and returns the file path. Use the Read tool to view screenshots.
+**Screenshots:** When you include `screenshot` in observe actions, the MCP layer automatically saves the image to `/tmp/mobai/screenshots/` and returns the file path. Use the Read tool to view screenshots. To save a screenshot to a specific folder, use the `screenshot` DSL action with `file_path` and `name`.
 
 ## API Base URL
 
@@ -507,7 +508,8 @@ Common error codes:
 | Assert Screen Changed | `{"action": "assert_screen_changed", "threshold_percent": 15}` |
 | Double Tap | `{"action": "double_tap", "predicate": {"text_contains": "Photo"}}` |
 | Two Finger Tap | `{"action": "two_finger_tap", "coords": {"x": 200, "y": 400}}` (iOS only) |
-| Drag | `{"action": "drag", "from_coords": {"x": 100, "y": 200}, "to_coords": {"x": 300, "y": 400}, "duration_ms": 500}` |
+| Drag (predicate) | `{"action": "drag", "from": {"predicate": {"text": "Item"}}, "to_element": {"predicate": {"text": "Trash"}}, "duration_ms": 500}` |
+| Drag (coords) | `{"action": "drag", "from_coords": {"x": 100, "y": 200}, "to_coords": {"x": 300, "y": 400}, "duration_ms": 500}` |
 | Kill App | `{"action": "kill_app", "bundle_id": "com.example.app"}` |
 | Set Location | `{"action": "set_location", "lat": 40.7128, "lon": -74.0060}` (Android 12+ for real devices) |
 | Reset Location | `{"action": "reset_location"}` (Android 12+ for real devices) |

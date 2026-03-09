@@ -137,7 +137,7 @@ No authentication is required. The API runs on localhost only.
 ```
 GET /devices                    # List all connected devices
 GET /devices/{id}               # Get specific device info
-GET /devices/{id}/screenshot    # Capture screenshot (base64 PNG)
+GET /devices/{id}/screenshot    # Capture screenshot (saved to file, path returned). Add ?path=~/Downloads&name=foo to save to custom location.
 GET /devices/{id}/apps          # List installed apps (or use DSL observe with include: ["installed_apps"])
 ```
 

@@ -26,8 +26,9 @@ Capture a screenshot from the specified device.
      "url": "http://127.0.0.1:8686/api/v1/devices/{deviceId}/screenshot"
    }
    ```
+   To save to a custom location, add query params: `?path=~/Downloads&name=my_screenshot`
 
-3. The response contains `{"data": "base64_png", "format": "png"}`. Display or describe the screenshot content.
+3. The response contains `{"path": "/tmp/mobai/screenshots/screenshot.png", "format": "png"}`. Use the Read tool to view the saved screenshot.
 
 4. Optionally, also fetch the UI tree to provide context about what's visible:
    ```json
