@@ -8,7 +8,7 @@ Official plugin marketplace for [MobAI](https://mobai.run) - AI-powered mobile d
 
 | Plugin | Description |
 |--------|-------------|
-| [mobai](plugins/mobai/) | Control Android/iOS devices, emulators, and simulators |
+| [mobai](plugins/mobai/) | Control Android/iOS devices, emulators, and simulators via the [mobai-mcp](https://github.com/MobAI-App/mobai-mcp) server |
 
 ## Installation
 
@@ -58,6 +58,8 @@ Connect an Android/iOS device via USB, or start an emulator/simulator.
 /agent ABC123 Open Settings and enable WiFi
 ```
 
+Or just ask Claude in natural language — the plugin exposes typed MCP tools for device control, DSL automation, app management, testing, and iOS debugging.
+
 ## Repository Structure
 
 ```
@@ -67,18 +69,15 @@ mobai-marketplace/
 ├── plugins/
 │   └── mobai/              # MobAI device control plugin
 │       ├── .claude-plugin/
-│       ├── commands/
-│       ├── skills/
-│       └── mcp/
+│       ├── .mcp.json       # Runs npx -y mobai-mcp
+│       └── commands/
 ├── LICENSE
 └── README.md
 ```
 
 ## For Other AI Tools
 
-This marketplace is for Claude Code. For other AI tools (Cursor, Windsurf, Cline), use the standalone MCP server:
-
-- **MCP Server**: [mobai-mcp](https://github.com/MobAI-App/mobai-mcp)
+The plugin wraps the standalone [mobai-mcp](https://github.com/MobAI-App/mobai-mcp) server, which also works with any other MCP client (Cursor, Windsurf, Cline) — configure it there with `npx -y mobai-mcp`.
 
 ## Contributing
 

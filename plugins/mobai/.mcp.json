@@ -1,6 +1,6 @@
 {
-  "mobai-http": {
+  "mobai": {
     "command": "npx",
-    "args": ["-y", "mobai-http-mcp"]
+    "args": ["-y", "mobai-mcp"]
   }
 }

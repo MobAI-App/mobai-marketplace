@@ -11,8 +11,8 @@
     {
       "name": "mobai",
       "source": "./plugins/mobai",
-      "description": "Control Android and iOS devices, emulators, and simulators through MobAI HTTP API",
-      "version": "1.5.1",
+      "description": "Control Android and iOS devices, emulators, and simulators through the MobAI MCP server",
+      "version": "2.0.0",
       "author": {
         "name": "MobAI",
         "email": "contact@mobai.run",

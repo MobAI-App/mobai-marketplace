@@ -1,7 +1,7 @@
 {
   "name": "mobai",
-  "version": "1.5.1",
-  "description": "Control Android and iOS devices, emulators, and simulators through MobAI HTTP API",
+  "version": "2.0.0",
+  "description": "Control Android and iOS devices, emulators, and simulators through the MobAI MCP server",
   "author": {
     "name": "MobAI",
     "email": "contact@mobai.run",
@@ -10,7 +10,6 @@
   "repository": "https://github.com/MobAI-App/mobai-marketplace",
   "license": "Apache-2.0",
   "keywords": ["mobile", "automation", "android", "ios", "device-control", "emulator", "simulator", "ai-agent"],
-  "skills": "./skills/",
   "commands": ["./commands/"],
   "mcpServers": "./.mcp.json"
 }

@@ -4,15 +4,7 @@ description: List connected Android and iOS devices
 
 # List Devices
 
-Fetch the list of connected mobile devices from MobAI.
-
-Use the `mcp__mobai-http__http_request` tool:
-```json
-{
-  "method": "GET",
-  "url": "http://127.0.0.1:8686/api/v1/devices"
-}
-```
+Fetch the list of connected mobile devices using the `list_devices` tool from the mobai MCP server.
 
 Present the results in a formatted table showing:
 - Device ID
@@ -22,6 +14,9 @@ Present the results in a formatted table showing:
 - OS Version
 - Connection status
 - Bridge running status
+- In use / claimed by (when `inUse` is true, show the `inUseBy` holder)
+
+Note in the output when a device is remote (`"remote": true` — attached to another MobAI node) or cloud (`"cloud": true` — lives in a cloud device farm). All MobAI tools work on them transparently, but host-local tooling (adb, simctl, ffmpeg) cannot reach them.
 
 ## Supported Device Types
 
@@ -33,11 +28,7 @@ MobAI supports both physical devices and virtual devices:
 
 ### Emulators and Simulators
 
-MobAI also supports Android emulators and iOS simulators. To use them:
-
-1. **Start the emulator/simulator first** - Launch your Android emulator (via Android Studio AVD Manager or command line) or iOS Simulator (via Xcode) before connecting with MobAI
-2. **MobAI will detect it automatically** - Once running, the emulator/simulator will appear in the devices list alongside physical devices
-3. **All features work the same** - Screenshots, taps, swipes, text input, and app launching work identically on emulators/simulators
+Android emulators and iOS simulators appear in the device list once they are running:
 
 **Android Emulator:**
 ```bash
@@ -46,13 +37,9 @@ emulator -avd <avd_name>
 # Or use Android Studio AVD Manager
 ```
 
-**iOS Simulator:**
-```bash
-# Start simulator from command line
-open -a Simulator
-# Or launch from Xcode > Open Developer Tool > Simulator
-```
+**iOS Simulator (macOS only):**
+Shutdown simulators do not appear in `list_devices`. Use the `list_simulators` tool to discover them (including Shutdown ones), then `boot_simulator` to boot one headlessly — it will show up in the device list shortly after.
 
 If no devices are connected, inform the user that they need to either:
-- Connect a physical device via USB and ensure MobAI is running
-- Start an Android emulator or iOS Simulator, then refresh the devices list
+- Connect a physical device via USB and ensure the MobAI desktop app is running
+- Start an Android emulator, or boot an iOS simulator via `list_simulators` + `boot_simulator`

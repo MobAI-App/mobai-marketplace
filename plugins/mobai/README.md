@@ -4,17 +4,24 @@
 
 [Claude Code](https://claude.ai/code) plugin for [MobAI](https://mobai.run) - AI-powered mobile device automation. This plugin enables Claude Code to control Android and iOS devices, emulators, and simulators through natural language commands.
 
+The plugin runs the official [mobai-mcp](https://github.com/MobAI-App/mobai-mcp) server (via `npx -y mobai-mcp`), which proxies to the MobAI desktop app's HTTP API.
+
 ## Features
 
-- **Device Control**: List, connect, and manage Android/iOS devices
-- **Native App Automation**: Tap, type, swipe using accessibility tree
-- **Web Automation**: Control Safari/Chrome with CSS selectors
-- **DSL Batch Execution**: Execute multiple automation steps efficiently
-- **AI Agent**: Run autonomous agents to complete complex tasks
+- **Device Control**: List, claim, and manage Android/iOS devices — local, remote, and cloud
+- **Native App Automation**: Tap, type, swipe, scroll using accessibility-tree predicates
+- **Web Automation**: Control Safari/Chrome and WebViews with CSS selectors and JavaScript
+- **DSL Batch Execution**: Execute multi-step automation scripts in a single call
+- **Screenshots & UI Audit**: Fast screenshots for analysis, full-quality captures, deterministic UI audits
+- **App Management**: List, install (with iOS re-signing), and uninstall apps
+- **Testing**: Discover and run `.mob` test cases
+- **Live Debugging**: Attach lldb to iOS apps — breakpoints, stepping, expression evaluation
+- **Simulator Lifecycle**: List, boot (headless, slim, or disposable clone), and shut down iOS simulators
 
 ## Prerequisites
 
 - [Claude Code CLI](https://claude.ai/code)
+- Node.js 18+ (to run the MCP server via `npx`)
 - [MobAI desktop app](https://mobai.run) running locally (provides the HTTP API on port 8686)
 - Connected Android or iOS device (or emulator/simulator)
 
@@ -38,56 +45,64 @@ git clone https://github.com/MobAI-App/mobai-marketplace.git
 /plugin install mobai@mobai-marketplace
 ```
 
-## Available Skills
+## MCP Tools
 
-### mobai
-Main skill for device control. Use when interacting with mobile devices, taking screenshots, tapping elements, etc.
+The bundled `mobai-mcp` server exposes typed tools, including:
 
-### native-runner
-Specialized sub-agent for native UI automation. Use for automating native apps like Settings, Mail, Instagram using element predicates and the DSL batch execution system.
+| Area | Tools |
+|------|-------|
+| Devices | `list_devices`, `get_device`, `claim_device`, `release_device` |
+| Bridge | `start_bridge`, `stop_bridge` |
+| Screenshots | `get_screenshot` (fast, for analysis), `save_screenshot` (full quality) |
+| Automation | `execute_dsl` (taps, typing, swipes, scrolling, web context, assertions, audits) |
+| Apps | `list_apps`, `install_app`, `uninstall_app`, `debug_app` |
+| Testing | `test_get_active`, `test_list_projects`, `test_run` |
+| Debugging (iOS) | `debug_attach`, `debug_state`, `debug_breakpoint`, `debug_eval`, `debug_step`, `debug_detach` |
+| Simulators (macOS) | `list_simulators`, `boot_simulator`, `shutdown_simulator` |
 
-### web-runner
-Specialized sub-agent for web automation. Use for automating Safari, Chrome, and WebViews using CSS selectors, DOM inspection, and JavaScript execution.
+It also serves MCP resources with reference documentation Claude reads on demand:
+
+- `mobai://reference/device-automation` — DSL actions, predicates, failure strategies
+- `mobai://reference/testing` — `.mob` script syntax and testing workflow
+- `mobai://reference/debugging` — lldb debugging workflow
+- `mobai://claude-code-preview` — previewing a device's control UI in Claude Code
 
 ## Available Commands
 
 ### /devices
 List all connected Android and iOS devices.
 
-### /screenshot [device_id]
+### /screenshot [device_id] [save location]
 Capture a screenshot from a device.
 
-### /agent <device_id> <task>
-Run an AI agent to perform a task on the device.
+### /agent [device_id] <task>
+Automate a task on the device (e.g. "Open Settings and enable WiFi").
 
 ## Example Usage
 
-### List devices
 ```
 /devices
-```
-
-### Take screenshot
-```
 /screenshot ABC123
-```
-
-### Run agent task
-```
 /agent ABC123 Open Settings and enable WiFi
 ```
 
-### Use native-runner for automation
+Or just ask in natural language:
+
 ```
-Use the native-runner skill to: Open the Settings app and navigate to Privacy settings
-Device ID: ABC123
+Take a screenshot of the iPhone simulator and tell me what's on screen
+Run the login.mob test on the Pixel emulator
+Set a breakpoint in LoginViewController.swift:42 and tell me why login fails
 ```
 
-### Use web-runner for web automation
-```
-Use the web-runner skill to: Navigate to example.com and fill in the login form
-Device ID: ABC123
-```
+## Configuration
+
+By default the server talks to the MobAI desktop app at `http://127.0.0.1:8686`. Environment variables (set in your shell or Claude Code MCP config) let you point it elsewhere:
+
+| Variable | Purpose |
+|----------|---------|
+| `MOBAI_URL` | Base address of the MobAI API, no `/api/v1` (defaults to `http://127.0.0.1:8686`) |
+| `MOBAI_TOKEN` | Local desktop app API token, for reaching `:8686` from off-loopback on the same network |
+| `MOBAI_API_KEY` | Account key (`mobai_...`) for connecting through the MobAI relay (cloud agents) |
 
 ## Plugin Structure
 
@@ -95,78 +110,34 @@ Device ID: ABC123
 plugins/mobai/
 ├── .claude-plugin/
 │   └── plugin.json          # Plugin manifest
-├── .mcp.json                 # MCP server configuration
+├── .mcp.json                # MCP server configuration (npx -y mobai-mcp)
 ├── commands/
 │   ├── devices.md           # /devices command
 │   ├── screenshot.md        # /screenshot command
 │   └── agent.md             # /agent command
-├── skills/
-│   ├── mobai/
-│   │   ├── SKILL.md         # Main MobAI skill
-│   │   ├── api-reference.md # API documentation
-│   │   └── examples.md      # Usage examples
-│   ├── native-runner/
-│   │   └── SKILL.md         # Native app automation
-│   └── web-runner/
-│       └── SKILL.md         # Web automation
-├── mcp/                     # Bundled MCP server
-│   ├── src/index.ts
-│   ├── package.json
-│   └── dist/
 └── README.md
 ```
 
 ## How It Works
 
-The plugin provides:
-
-1. **MCP Server** - HTTP request tool for calling MobAI API
-2. **Skills** - Prompt-based guides for automation patterns
-3. **Commands** - Quick actions for common operations
-
-All automation goes through the MobAI desktop app's HTTP API running on `http://127.0.0.1:8686`.
-
-## Comparison with MCP Server
-
-| Feature | Claude Code Plugin | MCP Server |
-|---------|-------------------|------------|
-| Platform | Claude Code only | Any MCP client |
-| Tools | http_request (generic) | Named tools + http_request |
-| Resources | Skills (markdown) | MCP resources |
-| Setup | Plugin install | npx config |
-
-Use this plugin for Claude Code. For other AI tools (Cursor, Windsurf, Cline), use [mobai-mcp](https://github.com/MobAI-App/mobai-mcp).
+The plugin configures Claude Code to launch the published [mobai-mcp](https://www.npmjs.com/package/mobai-mcp) server over stdio. The server proxies tool calls to the MobAI desktop app's HTTP API at `http://127.0.0.1:8686`, handles device claiming/leasing automatically, and saves screenshots to disk so Claude can read them.
 
 ## Troubleshooting
 
-### "Connection refused" error
-- Ensure MobAI desktop app is running
-- Check that API is available at http://127.0.0.1:8686
+### "Could not reach the MobAI desktop app" error
+- Ensure the MobAI desktop app is installed and running ([download](https://mobai.run/download))
+- Check that the API is available at http://127.0.0.1:8686
 
 ### "Bridge not running" error
-- Start the bridge first using the API or the native-runner skill
+- Start the bridge first with the `start_bridge` tool
 - iOS bridge may take up to 60 seconds to start
 
+### Device is claimed by someone else
+- Devices with `inUse: true` are leased to the holder in `inUseBy` — claim a different device or wait for the lease to expire
+
 ### Screenshots not visible
-- Screenshots are saved to `/tmp/mobai/screenshots/`
+- Screenshots are saved under the OS temp directory (`<tmp>/mobai/screenshots/`)
 - Use the Read tool to view them
-
-## Development
-
-```bash
-# Clone the marketplace
-git clone https://github.com/MobAI-App/mobai-marketplace.git
-cd mobai-marketplace/plugins/mobai
-
-# Build MCP server
-cd mcp
-npm install
-npm run build
-cd ..
-
-# Install plugin locally
-claude plugins add .
-```
 
 ## License
 
